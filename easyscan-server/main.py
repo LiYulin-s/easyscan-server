@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, Request # Import Request
 from fastapi.responses import RedirectResponse, HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates # Import Jinja2Templates
 
+from fakeredis.aioredis import FakeRedis
+
 from pydantic import BaseModel
 from redis.asyncio import Redis
 import os 
@@ -15,8 +17,16 @@ import json
 app = FastAPI()
 
 # Get Redis URL from environment variable, default to localhost for development
-redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
-domain = Domain(redis=Redis.from_url(redis_url))
+
+domain = None
+
+if os.getenv("USE_REAL_REDIS") is not None:
+    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
+    domain = Domain(redis= Redis.from_url(redis_url))
+
+else:
+    # Use FakeRedis for testing or development purposes
+    domain = Domain(redis=FakeRedis())
 
 # Initialize Jinja2Templates to load templates from the "templates" directory
 templates = Jinja2Templates(directory="easyscan-server/templates")
