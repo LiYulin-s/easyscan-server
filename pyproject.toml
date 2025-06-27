@@ -1,9 +1,10 @@
 [project]
 name = "easyscan-server"
-version = "0.1.5"
+version = "0.1.6"
 description = "EasyScan Server - A FastAPI-based server for EasyScan"
 readme = "README.md"
 requires-python = ">=3.13"
+
 dependencies = [
     "fakeredis>=2.30.1",
     "fastapi[standard]>=0.115.12",
@@ -11,3 +12,13 @@ dependencies = [
     "textual>=3.5.0",
     "uvicorn>=0.34.3",
 ]
+
+[build-system]
+build-backend  = 'hatchling.build'
+requires       = ['hatchling']
+
+[tool.hatchling]
+include-package-data = true
+
+[tool.hatchling.package-data]
+"templates" = ["*.html"]

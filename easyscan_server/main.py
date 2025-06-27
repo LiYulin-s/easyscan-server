@@ -7,6 +7,7 @@ from fakeredis.aioredis import FakeRedis
 from pydantic import BaseModel
 from redis.asyncio import Redis
 import os 
+from pathlib import Path
 
 from .type import SetURLRequest, GetURLResponse, SetURLResponse # Import updated models from type.py
 from .domain import Domain, URLData # Import URLData from domain
@@ -29,7 +30,10 @@ else:
     domain = Domain(redis=FakeRedis())
 
 # Initialize Jinja2Templates to load templates from the "templates" directory
-templates = Jinja2Templates(directory="easyscan_server/templates")
+# Use dynamic path resolution to handle both development and installed package scenarios
+current_dir = Path(__file__).parent
+templates_dir = current_dir / "templates"
+templates = Jinja2Templates(directory=str(templates_dir))
 
 # Store current clients connected to SSE for a specific key
 # In a production environment, this would need more robust management
