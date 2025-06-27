@@ -29,7 +29,7 @@ else:
     domain = Domain(redis=FakeRedis())
 
 # Initialize Jinja2Templates to load templates from the "templates" directory
-templates = Jinja2Templates(directory="easyscan-server/templates")
+templates = Jinja2Templates(directory="easyscan_server/templates")
 
 # Store current clients connected to SSE for a specific key
 # In a production environment, this would need more robust management
