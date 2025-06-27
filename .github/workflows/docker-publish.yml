@@ -8,6 +8,7 @@ on:
     workflows: ["Publish Python Package to PyPI with uv"]
     types:
         - completed 
+  workflow_dispatch: 
 
 # Grant permissions for the action
 permissions:
@@ -61,8 +62,6 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
     # 6. Generate summary
     - name: Generate summary
