@@ -23,7 +23,7 @@ pip install easyscan-server
 ### 从源码安装
 
 ```bash
-git clone https://github.com/your-username/easyscan-server.git
+git clone https://github.com/LiYulin-s/easyscan-server.git
 cd easyscan-server
 pip install -e .
 ```
@@ -46,14 +46,14 @@ python -m easyscan_server --host 0.0.0.0 --port 8080
 
 ```bash
 # 拉取最新版本
-docker pull ghcr.io/liyulin/easyscan-server:latest
+docker pull ghcr.io/liyulin-s/easyscan-server:latest
 
 # 运行容器
-docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:latest
+docker run -p 8000:8000 ghcr.io/liyulin-s/easyscan-server:latest
 
 # 或者拉取指定版本
-docker pull ghcr.io/liyulin/easyscan-server:v0.1.2
-docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:v0.1.2
+docker pull ghcr.io/liyulin-s/easyscan-server:v0.1.2
+docker run -p 8000:8000 ghcr.io/liyulin-s/easyscan-server:v0.1.2
 ```
 
 #### 本地构建
@@ -198,7 +198,7 @@ easyscan-server/
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/easyscan-server.git
+git clone https://github.com/LiYulin-s/easyscan-server.git
 cd easyscan-server
 
 # 安装依赖
@@ -226,17 +226,17 @@ python -m easyscan_server --host 0.0.0.0 --port 8000
 
 ```bash
 # 基本部署 - 使用最新版本
-docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:latest
+docker run -p 8000:8000 ghcr.io/liyulin-s/easyscan-server:latest
 
 # 使用指定版本
-docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:v0.1.2
+docker run -p 8000:8000 ghcr.io/liyulin-s/easyscan-server:v0.1.2
 ```
 
 #### 本地构建部署
 
 ```bash
 # 克隆并构建
-git clone https://github.com/liyulin/easyscan-server.git
+git clone https://github.com/LiYulin-s/easyscan-server.git
 cd easyscan-server
 docker build -t easyscan-server .
 docker run -p 8000:8000 easyscan-server
@@ -274,7 +274,7 @@ services:
       - redis_data:/data
   
   easyscan-server:
-    image: ghcr.io/liyulin/easyscan-server:latest
+    image: ghcr.io/liyulin-s/easyscan-server:latest
     restart: unless-stopped
     ports:
       - "8000:8000"
