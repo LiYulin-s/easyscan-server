@@ -1,6 +1,6 @@
 [project]
 name = "easyscan-server"
-version = "0.1.2"
+version = "0.1.4"
 description = "EasyScan Server - A FastAPI-based server for EasyScan"
 readme = "README.md"
 requires-python = ">=3.13"

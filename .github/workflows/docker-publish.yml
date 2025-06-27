@@ -4,10 +4,10 @@ name: Build and Publish Docker Image to GHCR
 
 # Trigger on tag pushes and manual dispatch
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+' # Matches vX.Y.Z semantic version tags
-  workflow_dispatch: # Allow manual triggering
+  workflow_run:
+    workflows: ["Publish Python Package to PyPI with uv"]
+    types:
+        - completed 
 
 # Grant permissions for the action
 permissions:
@@ -16,6 +16,7 @@ permissions:
 
 jobs:
   build-and-push:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Build and push Docker image
     runs-on: ubuntu-latest
     
