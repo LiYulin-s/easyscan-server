@@ -19,7 +19,7 @@ jobs:
     # Define the environment required by PyPI's trusted publishing
     environment:
       name: pypi # Must match the environment name in PyPI settings if you used one
-      url: https://pypi.org/p/yacrawler # Link shown in GitHub deployments tab
+      url: https://pypi.org/p/easyscan-server # Link shown in GitHub deployments tab
 
     steps:
     # 1. Check out the repository code

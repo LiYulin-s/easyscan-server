@@ -1,0 +1,82 @@
+# .github/workflows/docker-publish.yml
+
+name: Build and Publish Docker Image to GHCR
+
+# Trigger on tag pushes and manual dispatch
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Matches vX.Y.Z semantic version tags
+  workflow_dispatch: # Allow manual triggering
+
+# Grant permissions for the action
+permissions:
+  contents: read
+  packages: write # Required for pushing to GHCR
+
+jobs:
+  build-and-push:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Check out the repository code
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    # 2. Set up Docker Buildx for multi-platform builds
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # 3. Log in to GitHub Container Registry
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # 4. Extract metadata for Docker image
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    # 5. Build and push Docker image
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    # 6. Generate summary
+    - name: Generate summary
+      run: |
+        echo "## 🐳 Docker Image Published" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The Docker image has been successfully built and pushed to GitHub Container Registry." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Image Details" >> $GITHUB_STEP_SUMMARY
+        echo "- **Registry**: GitHub Container Registry (ghcr.io)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Repository**: \`ghcr.io/${{ github.repository }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **Platforms**: linux/amd64, linux/arm64" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🏃 Usage" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+        echo "# Pull and run the latest image" >> $GITHUB_STEP_SUMMARY
+        echo "docker run -p 8000:8000 ghcr.io/${{ github.repository }}:latest" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

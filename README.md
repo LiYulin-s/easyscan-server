@@ -42,6 +42,22 @@ python -m easyscan_server --host 0.0.0.0 --port 8080
 
 ### 使用Docker
 
+#### 从GitHub Container Registry拉取（推荐）
+
+```bash
+# 拉取最新版本
+docker pull ghcr.io/liyulin/easyscan-server:latest
+
+# 运行容器
+docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:latest
+
+# 或者拉取指定版本
+docker pull ghcr.io/liyulin/easyscan-server:v0.1.2
+docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:v0.1.2
+```
+
+#### 本地构建
+
 ```bash
 # 构建镜像
 docker build -t easyscan-server .
@@ -67,6 +83,31 @@ export REDIS_URL=redis://localhost:6379
 # 启动服务
 python -m easyscan_server
 ```
+
+## 🚀 CI/CD 自动化
+
+本项目包含完整的 CI/CD 流程：
+
+### 自动发布
+
+- **PyPI发布**: 当推送符合 `v*.*.*` 格式的标签时，自动构建并发布Python包到PyPI
+- **Docker镜像**: 自动构建多架构Docker镜像并推送到GitHub Container Registry
+
+### 发布流程
+
+1. 更新 `pyproject.toml` 中的版本号
+2. 创建并推送版本标签：
+   ```bash
+   git tag v0.1.3
+   git push origin v0.1.3
+   ```
+3. GitHub Actions将自动：
+   - 构建Python包并发布到PyPI
+   - 构建Docker镜像（支持 amd64 和 arm64）并推送到GHCR
+
+### 手动触发
+
+也可以在GitHub Actions页面手动触发Docker镜像构建。
 
 ## 📚 API 文档
 
@@ -179,13 +220,31 @@ python -m easyscan_server --host 0.0.0.0 --port 8000
 
 ## 🐳 Docker 部署
 
-### 基本部署
+### 快速开始
+
+#### 从GitHub Container Registry部署（推荐）
 
 ```bash
+# 基本部署 - 使用最新版本
+docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:latest
+
+# 使用指定版本
+docker run -p 8000:8000 ghcr.io/liyulin/easyscan-server:v0.1.2
+```
+
+#### 本地构建部署
+
+```bash
+# 克隆并构建
+git clone https://github.com/liyulin/easyscan-server.git
+cd easyscan-server
+docker build -t easyscan-server .
 docker run -p 8000:8000 easyscan-server
 ```
 
-### 使用真实Redis部署
+### 生产环境部署
+
+#### 使用真实Redis部署
 
 ```bash
 # 启动Redis容器
@@ -196,21 +255,27 @@ docker run -p 8000:8000 \
   -e USE_REAL_REDIS=1 \
   -e REDIS_URL=redis://redis:6379 \
   --link redis:redis \
-  easyscan-server
+  ghcr.io/liyulin/easyscan-server:latest
 ```
 
-### Docker Compose
+#### Docker Compose部署
+
+创建 `docker-compose.yml` 文件：
 
 ```yaml
 version: '3.8'
 services:
   redis:
     image: redis:alpine
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
   
   easyscan-server:
-    image: easyscan-server
+    image: ghcr.io/liyulin/easyscan-server:latest
+    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
@@ -218,7 +283,31 @@ services:
       - REDIS_URL=redis://redis:6379
     depends_on:
       - redis
+
+volumes:
+  redis_data:
 ```
+
+启动服务：
+
+```bash
+docker-compose up -d
+```
+
+### 多架构支持
+
+Docker 镜像支持多种架构：
+- `linux/amd64` (x86_64)
+- `linux/arm64` (ARM64/Apple Silicon)
+
+Docker 会自动选择适合您系统的架构版本。
+
+### 镜像标签说明
+
+- `latest`: 最新稳定版本
+- `vX.Y.Z`: 具体版本号（如 `v0.1.2`）
+- `vX.Y`: 主要版本号（如 `v0.1`）
+- `vX`: 大版本号（如 `v0`）
 
 ## 📝 许可证
 
@@ -253,6 +342,7 @@ services:
 
 ### 部署和打包
 - **[Docker](https://www.docker.com/)** - 容器化平台
+- **[GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)** - Docker镜像托管服务
 - **[uv](https://github.com/astral-sh/uv)** - 现代Python包管理器
 - **[GitHub Actions](https://github.com/features/actions)** - CI/CD自动化
 
